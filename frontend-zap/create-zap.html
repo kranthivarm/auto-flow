@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Create Zap — ZapClone</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <nav class="navbar">
+    <span class="brand">ZapClone</span>
+    <div class="nav-links">
+      <a href="index.html">My Zaps</a>
+      <a href="executions.html">Execution History</a>
+      <a href="create-zap.html" class="active">+ New Zap</a>
+      <a href="connect-calendar.html">Calendar</a>
+      <span id="nav-user-name" style="color:#888;font-size:14px"></span>
+      <button class="btn btn-sm" onclick="logout()">Logout</button>
+    </div>
+  </nav>
+
+  <main class="container" style="max-width:640px">
+    <h1 id="page-title" style="margin-bottom:1.5rem">Create Zap</h1>
+
+    <!-- bottom save button -->
+    <button id="save-btn" class="btn btn-primary"
+        onclick="saveZap()"
+        style="width:100%;margin-top:1rem;padding:12px">
+        Save Zap
+    </button>
+
+    <div id="error-msg" class="error-banner hidden"></div>
+    <div id="success-msg" class="success-banner hidden"></div>
+
+    <div class="card">
+      <h2>Zap details</h2>
+      <div class="form-group">
+        <label for="zap-name">Name</label>
+        <input type="text" id="zap-name"
+          placeholder="e.g. Weather Email Every Morning">
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Trigger — what starts this Zap</h2>
+      <div class="form-group">
+        <label for="trigger-type">Trigger type</label>
+        <select id="trigger-type" onchange="onTriggerChange()">
+          <option value="CRON">Scheduled (every day at a time)</option>
+          <option value="WEBHOOK">Webhook (external service calls you)</option>
+          <option value="GMAIL_POLL">Gmail (new email from sender)</option>
+          <option value="CALENDAR_EVENT">Google Calendar (upcoming event)</option>
+        </select>
+      </div>
+
+      <div id="cron-fields">
+        <div class="form-group">
+          <label for="cron-expr">Cron expression</label>
+          <input type="text" id="cron-expr" value="0 8 * * *">
+          <small class="hint">0 0 8 * * * = every day at 8:00 AM</small>
+        </div>
+      </div>
+
+      <div id="webhook-fields" class="hidden">
+        <p class="hint">
+          After saving, you will get a unique webhook URL.
+          Point GitHub, Stripe, or any service to that URL.
+        </p>
+      </div>
+
+      <div id="gmail-fields" class="hidden">
+        <div class="form-group">
+          <label for="gmail-sender">Only trigger for emails from</label>
+          <input type="text" id="gmail-sender"
+            placeholder="noreply@github.com">
+        </div>
+      </div>
+
+      <div id="calendar-fields" class="hidden">
+        <div class="form-group">
+          <label for="calendar-reminder-minutes">Remind me how many minutes before event</label>
+          <input type="number" id="calendar-reminder-minutes" value="30" min="0">
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Actions — what happens when triggered</h2>
+      <p class="hint" style="margin-bottom:1rem">
+        Actions run in order. Step 1 output can be used in Step 2.
+      </p>
+      <div id="actions-container"></div>
+      <button class="btn btn-secondary" onclick="addAction()">
+        + Add Action
+      </button>
+    </div>
+
+    <button class="btn btn-primary" onclick="saveZap()"
+      style="width:100%;margin-top:1rem;padding:12px">
+      Save Zap
+    </button>
+  </main>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/create-zap.js"></script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZapClone — My Zaps</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <nav class="navbar">
+    <span class="brand">ZapClone</span>
+    <div class="nav-links">
+      <a href="index.html" class="active">My Zaps</a>
+      <a href="executions.html">Execution History</a>
+      <a href="create-zap.html">+ New Zap</a>
+      <a href="connect-calendar.html">Calendar</a>
+      <span id="nav-user-name" style="color:#888;font-size:14px"></span>
+      <button class="btn btn-sm" onclick="logout()">Logout</button>
+    </div>
+  </nav>
+
+  <main class="container">
+    <div class="page-header">
+      <h1>My Zaps</h1>
+      <a href="create-zap.html" class="btn btn-primary">+ New Zap</a>
+    </div>
+
+    <div id="error-msg" class="error-banner hidden"></div>
+    <p id="loading-msg">Loading...</p>
+    <div id="zap-list" class="hidden"></div>
+    <div id="empty-msg" class="empty-state hidden">
+      <p>No zaps yet.</p>
+      <a href="create-zap.html" class="btn btn-primary" style="margin-top:1rem">
+        Create your first Zap
+      </a>
+    </div>
+  </main>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/index.js"></script>
+</body>
+</html>

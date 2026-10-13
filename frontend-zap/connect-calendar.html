@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Connect Calendar — ZapClone</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav class="navbar">
+    <span class="brand">ZapClone</span>
+    <div class="nav-links">
+        <a href="index.html">My Zaps</a>
+        <a href="executions.html">History</a>
+        <a href="create-zap.html">+ New Zap</a>
+        <a href="copilot.html">✦ AI Copilot</a>
+        <a href="connect-calendar.html" class="active">
+            Calendar
+        </a>
+    </div>
+</nav>
+
+<main class="container" style="max-width:560px">
+    <div style="text-align:center;padding:3rem 0 2rem">
+        <div style="font-size:56px;margin-bottom:1rem">📅</div>
+        <h1 style="margin-bottom:0.5rem">
+            Connect Google Calendar
+        </h1>
+        <p style="color:#666;font-size:15px">
+            Connect your Google Calendar to get meeting
+            reminders on Telegram and Email.
+        </p>
+    </div>
+
+    <div id="status-card" class="card" 
+         style="text-align:center;padding:2rem">
+        <p id="status-loading" style="color:#888">
+            Checking connection status...
+        </p>
+
+        <div id="status-connected" 
+             class="hidden"
+             style="color:#16a34a">
+            <div style="font-size:36px;margin-bottom:0.5rem">
+                ✓
+            </div>
+            <p style="font-weight:600;font-size:16px">
+                Google Calendar Connected
+            </p>
+            <p id="connected-email" 
+               style="color:#888;font-size:14px"></p>
+            <button class="btn btn-secondary"
+                    onclick="disconnect()"
+                    style="margin-top:1rem">
+                Disconnect
+            </button>
+        </div>
+
+        <div id="status-disconnected" class="hidden">
+            <p style="color:#666;margin-bottom:1.5rem;
+                      font-size:14px">
+                Click below to authorize ZapClone to read
+                your Google Calendar events.
+            </p>
+            <button class="btn btn-primary"
+                    onclick="connectCalendar()"
+                    style="padding:12px 24px;font-size:15px">
+                🔗 Connect Google Calendar
+            </button>
+        </div>
+    </div>
+
+    <div class="card" style="margin-top:1rem">
+        <h2 style="margin-bottom:0.75rem;font-size:15px">
+            What you can do after connecting
+        </h2>
+        <p style="font-size:13px;color:#666;line-height:1.7">
+            • Get Telegram/Email reminder 30 min before meetings<br>
+            • Automatically create calendar events via AI Copilot<br>
+            • Create zaps triggered by upcoming calendar events
+        </p>
+    </div>
+
+    <div id="error-msg" class="error-banner hidden"></div>
+    <div id="success-msg" class="success-banner hidden"></div>
+</main>
+
+<script src="js/api.js"></script>
+<script>
+const token = localStorage.getItem('token');
+
+// Redirect to login if not logged in
+if (!token) {
+    window.location.href = 'login.html';
+}
+
+// Check URL params for success/error after OAuth callback
+const params = new URLSearchParams(window.location.search);
+if (params.get('success') === 'true') {
+    document.getElementById('success-msg').textContent =
+        '✓ Google Calendar connected successfully!';
+    document.getElementById('success-msg')
+        .classList.remove('hidden');
+}
+if (params.get('error')) {
+    document.getElementById('error-msg').textContent =
+        '⚠️ ' + params.get('error');
+    document.getElementById('error-msg')
+        .classList.remove('hidden');
+}
+
+async function checkStatus() {
+    try {
+        const res = await fetch(
+            `${GATEWAY_URL}/api/auth/google/calendar/status`,
+            {
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                }
+            }
+        );
+        const json = await res.json();
+
+        document.getElementById('status-loading')
+            .classList.add('hidden');
+
+        if (json.data && json.data.connected) {
+            document.getElementById('status-connected')
+                .classList.remove('hidden');
+            document.getElementById('connected-email')
+                .textContent = json.data.email || '';
+        } else {
+            document.getElementById('status-disconnected')
+                .classList.remove('hidden');
+        }
+    } catch (e) {
+        document.getElementById('status-loading')
+            .textContent = 'Could not check status.';
+        document.getElementById('status-disconnected')
+            .classList.remove('hidden');
+    }
+}
+
+function connectCalendar() {
+    if (!token) {
+        window.location.href = 'login.html';
+        return;
+    }
+    // Pass token as query param since browser
+    // cannot set headers on redirects
+    window.location.href =
+        `${GATEWAY_URL}/api/auth/google/calendar/connect` +
+        `?token=${encodeURIComponent(token)}`;
+}
+
+async function disconnect() {
+    if (!confirm('Disconnect Google Calendar?')) return;
+    try {
+        await fetch(
+            `${GATEWAY_URL}/api/auth/google/calendar/revoke`,
+            {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                }
+            }
+        );
+        window.location.reload();
+    } catch (e) {
+        alert('Failed to disconnect: ' + e.message);
+    }
+}
+
+// Check status on page load
+checkStatus();
+</script>
+</body>
+</html>

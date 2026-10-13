@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Copilot — ZapClone</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .copilot-container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+        .copilot-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .copilot-header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        .copilot-header p {
+            color: #666;
+            font-size: 15px;
+        }
+        .ai-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 3px 10px;
+            border-radius: 20px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+        .input-area {
+            background: #fff;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            transition: border-color 0.2s;
+        }
+        .input-area:focus-within {
+            border-color: #ff4a00;
+        }
+        .input-area textarea {
+            width: 100%;
+            border: none;
+            outline: none;
+            font-size: 16px;
+            font-family: inherit;
+            resize: none;
+            min-height: 100px;
+            color: #1a1a1a;
+        }
+        .input-area textarea::placeholder {
+            color: #aaa;
+        }
+        .char-count {
+            font-size: 12px;
+            color: #aaa;
+            text-align: right;
+            margin-top: 8px;
+        }
+        .examples-label {
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 0.75rem;
+            font-weight: 500;
+        }
+        .examples-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 1.5rem;
+        }
+        .example-chip {
+            background: #f8f8f8;
+            border: 1px solid #e8e8e8;
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 13px;
+            color: #444;
+            cursor: pointer;
+            transition: all 0.15s;
+            text-align: left;
+            line-height: 1.4;
+        }
+        .example-chip:hover {
+            background: #fff3f0;
+            border-color: #ff4a00;
+            color: #ff4a00;
+        }
+        .generate-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #ff4a00, #ff6b35);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .generate-btn:hover { opacity: 0.9; }
+        .generate-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .thinking {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+        .thinking-dots {
+            display: inline-block;
+            font-size: 28px;
+            letter-spacing: 4px;
+            animation: pulse 1.4s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        .result-card {
+            display: none;
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-top: 1.5rem;
+        }
+        .result-header {
+            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid #bbf7d0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .success-icon {
+            width: 32px;
+            height: 32px;
+            background: #16a34a;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+        .result-title {
+            font-weight: 600;
+            font-size: 15px;
+            color: #15803d;
+        }
+        .result-message {
+            font-size: 13px;
+            color: #166534;
+            margin-top: 2px;
+        }
+        .result-body {
+            padding: 1.25rem;
+        }
+        .zap-preview {
+            background: #f9f9f9;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        .zap-preview-name {
+            font-weight: 600;
+            font-size: 15px;
+            margin-bottom: 8px;
+            color: #1a1a1a;
+        }
+        .zap-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+        .step-badge {
+            background: #ff4a00;
+            color: #fff;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 20px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        .step-badge.trigger-badge {
+            background: #7c3aed;
+        }
+        .step-detail {
+            font-size: 13px;
+            color: #555;
+            line-height: 1.5;
+        }
+        .step-detail strong {
+            color: #1a1a1a;
+        }
+        .result-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .btn-view {
+            flex: 1;
+            padding: 10px;
+            background: #ff4a00;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            display: block;
+        }
+        .btn-enable {
+            flex: 1;
+            padding: 10px;
+            background: #fff;
+            color: #16a34a;
+            border: 1px solid #16a34a;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        .btn-enable:hover {
+            background: #f0fdf4;
+        }
+        .error-card {
+            display: none;
+            background: #fdecea;
+            border: 1px solid #f5c6cb;
+            border-radius: 10px;
+            padding: 1rem 1.25rem;
+            margin-top: 1rem;
+            color: #c62828;
+            font-size: 14px;
+        }
+        .warning-box {
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 13px;
+            color: #92400e;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <span class="brand">ZapClone</span>
+    <div class="nav-links">
+        <a href="index.html">My Zaps</a>
+        <a href="executions.html">History</a>
+        <a href="create-zap.html">+ New Zap</a>
+        <a href="copilot.html" class="active">AI Copilot</a>
+        <a href="connect-calendar.html">Calendar</a>
+        <span id="nav-user-name" style="color:#888;font-size:14px"></span>
+        <button class="btn btn-sm" onclick="logout()">Logout</button>
+    </div>
+</nav>
+
+<main class="copilot-container">
+
+    <div class="copilot-header">
+        <div class="ai-badge">✦ AI Powered</div>
+        <h1>ZapClone Copilot</h1>
+        <p>Describe what you want to automate in plain English.<br>
+           Copilot builds the zap for you instantly.</p>
+    </div>
+
+    <div class="warning-box">
+        ⚠️ Copilot will create zaps with placeholder API keys.
+        After creation, edit the zap to fill in your real keys
+        before enabling it.
+    </div>
+
+    <div class="input-area">
+        <textarea
+            id="description"
+            placeholder="e.g. Send me weather updates every morning at 8am on Telegram with outfit suggestion"
+            maxlength="500"
+            oninput="updateCharCount(this)"></textarea>
+        <div class="char-count">
+            <span id="char-count">0</span>/500
+        </div>
+    </div>
+
+    <p class="examples-label">Try these examples:</p>
+    <div class="examples-grid">
+    <button class="example-chip" onclick="useExample(this)">
+        Send me top tech news every morning on Telegram
+    </button>
+    <button class="example-chip" onclick="useExample(this)">
+        Alert me on email when Reliance stock goes above ₹1500
+    </button>
+    <button class="example-chip" onclick="useExample(this)">
+        Send cricket scores to Telegram every 30 minutes
+    </button>
+    <button class="example-chip" onclick="useExample(this)">
+        Email me weather forecast for Bangalore every day at 7am
+    </button>
+    <button class="example-chip" onclick="useExample(this)">
+        Forward emails from my college to Telegram
+    </button>
+    <button class="example-chip" onclick="useExample(this)">
+        Send me morning news digest on email every weekday
+    </button>
+</div>
+
+    <button class="generate-btn"
+            id="generate-btn"
+            onclick="generateZap()">
+        ✦ Create Zap with AI
+    </button>
+
+    <div class="thinking" id="thinking">
+        <div class="thinking-dots">...</div>
+        <p style="margin-top:1rem;font-size:14px;">
+            AI is building your zap</p>
+    </div>
+
+    <div class="result-card" id="result-card">
+        <div class="result-header">
+            <div class="success-icon">✓</div>
+            <div>
+                <div class="result-title">Zap created successfully!</div>
+                <div class="result-message" id="result-message"></div>
+            </div>
+        </div>
+        <div class="result-body">
+            <div class="zap-preview" id="zap-preview"></div>
+            <div class="result-actions">
+                <a href="index.html" class="btn-view">
+                    View in My Zaps
+                </a>
+                <button class="btn-enable"
+                        id="enable-btn"
+                        onclick="enableZap()">
+                    Enable Zap
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="error-card" id="error-card"></div>
+
+</main>
+
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/copilot.js"></script>
+</body>
+</html>

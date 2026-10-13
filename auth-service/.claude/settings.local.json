@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mvn compile *)",
+      "Bash(curl -s -X POST http://localhost:8085/api/auth/register -H 'Content-Type: application/json' -d '{\"email\":\"test@example.com\",\"password\":\"secret123\",\"name\":\"Test User\"}')",
+      "Bash(python3 -m json.tool)"
+    ]
+  }
+}

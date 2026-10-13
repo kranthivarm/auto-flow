@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Execution History — ZapClone</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <nav class="navbar">
+    <span class="brand">ZapClone</span>
+    <div class="nav-links">
+      <a href="index.html">My Zaps</a>
+      <a href="executions.html" class="active">Execution History</a>
+      <a href="create-zap.html">+ New Zap</a>
+      <a href="connect-calendar.html">Calendar</a>
+      <span id="nav-user-name" style="color:#888;font-size:14px"></span>
+      <button class="btn btn-sm" onclick="logout()">Logout</button>
+    </div>
+  </nav>
+
+  <main class="container">
+    <h1 style="margin-bottom:1.5rem">Execution History</h1>
+    <div id="error-msg" class="error-banner hidden"></div>
+    <p id="loading-msg">Loading...</p>
+    <div id="exec-list" class="hidden"></div>
+    <div id="empty-msg" class="empty-state hidden">
+      <p>No executions yet. Enable a zap to see it run here.</p>
+    </div>
+  </main>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/executions.js"></script>
+</body>
+</html>

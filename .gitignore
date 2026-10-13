@@ -1,0 +1,72 @@
+# ==========================================
+# Environments & Local Secrets (CRITICAL)
+# ==========================================
+.env
+**/.env
+.env.*
+*.env
+**/application-local.properties
+**/application-local.yml
+**/application-secret.properties
+**/application-secret.yml
+
+# ==========================================
+# Compiled Binaries & Build Output
+# ==========================================
+target/
+**/target/
+build/
+**/build/
+out/
+**/out/
+bin/
+**/bin/
+
+# Archives & Artifacts
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# Keep Maven/Gradle wrapper jars if present
+!.mvn/wrapper/maven-wrapper.jar
+!gradle/wrapper/gradle-wrapper.jar
+
+# ==========================================
+# IDE & Editor Configurations
+# ==========================================
+# IntelliJ IDEA
+.idea/
+**/.idea/
+*.iml
+*.ipr
+*.iws
+
+# Eclipse
+.project
+.classpath
+.settings/
+**/.settings/
+.metadata
+bin/
+tmp/
+
+# VS Code
+.vscode/
+**/.vscode/
+
+# ==========================================
+# Logs & System Files
+# ==========================================
+*.log
+logs/
+**/logs/
+hs_err_pid*
+replay_pid*
+
+# OS specific
+.DS_Store
+Thumbs.db
+desktop.ini
